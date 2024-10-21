@@ -19,7 +19,11 @@ from google_connector import *
 # In[ ]:
 
 
-
+path = config.path
+dashboadr_folder = config.dashboadr_folder
+yandex_token = config.yandex_token
+# указываем путь к основной папке, в которой храняться папки с флайтами
+main_folder = config.main_folder # путь к папке в формате /tmp
 
 
 # In[ ]:
@@ -47,14 +51,61 @@ def get_data_from_sheet(base_link):
 # In[ ]:
 
 
-def get_data_to_yandex_disk(main_folder, base_link, name, report, yandex_token):
-    spreadsheetId = get_sheet_id(base_link)
-    content = download_google_data(spreadsheetId)
+# создаем функцию для подготовки места на Яндекс диске для загрузки файлов
+# у нас есть 2 типа файлов - файлы excel и файлы pbi
+# файлы excel мы просто загружаем в папку Клиента
+# файлы pbi мы загружаем в папку Файлы дашбордов, которая находится внутри папки Клинета
+# для того, чтобы отличить, какой файл куда следует загрузить функция на входе принимаетс специальный флаг для дашбордов flag='dashboard'
+# для файлов excel никаких флашов не используем
+# на входе фенкция принимает
+# main_folder - путь к основной папке на Яндекс Диске, в которой хранятся папки клиентов - /tmp
+# base_link - ссылка на гугл файл (либо эксель документ, либо гугл папка)
+# name - название клиента
+# report - название файла
+def get_files_to_yandex_disk(base_link, name, report, flag):
     
-    file_path = name + '/' + report + '.xlsx'
-    delete_yandex_disk_file(main_folder, file_path, yandex_token)
+    if flag=='dashboard':
+        name = name + '/'
+        # создаем путь к папке Дашборов внутри каждого клиента
+        dashboadr_folder_path = os.path.join(path, dashboadr_folder)
+        # прописываем путь к файлу дашборда, который сохранен на локальном компе
+        content = os.path.join(dashboadr_folder_path, report)
+        file_name = report
+        name = name + dashboadr_folder
+        # создаем конечный путь для каждого файла дашбордов
+        file_path = name  +  dashboadr_folder + '/' + report
+        # если на яндекс диске в папке дашбордов есть одноименный файл, то удаляем его
+        delete_yandex_disk_file(file_path)       
+        # открываем локально сохраненный файл дашборда и отправляем его на загрузку на яндекс диск
+        with open(content, 'rb') as f:
+            try:
+                upload_file_to_yandex_disk(name, file_name, f)
+            except:
+                print('Ошибка при загрузке файла')
+    if flag=='xlsx':
+        # если мы загружаеем excel Файл, то сначала забираем из гугл ссылки ИД файла для загрузки
+        spreadsheetId = get_sheet_id(base_link)
+        # передаем ИД файла в нашу функцию для получения файла целиком (т.к. это excel получаем все единиым куском со всеми листами внутри)
+        content = download_google_data(spreadsheetId)
+        file_name = report + '.xlsx'
+        file_path = name + file_name
+        # если на яндекс диске в папке Клиента есть одноименный excel файл, то удаляем его
+        delete_yandex_disk_file(file_path)
+        # загружаем файл на яндекс диск в папку соответствующего клиента
+        upload_file_to_yandex_disk(name, file_name, content)
+
+
+# In[ ]:
+
+
+# def get_data_to_yandex_disk(main_folder, base_link, name, report, yandex_token):
+#     spreadsheetId = get_sheet_id(base_link)
+#     content = download_google_data(spreadsheetId)
     
-    upload_file_to_yandex_disk(main_folder, name, report, content, yandex_token)
+#     file_path = name + '/' + report + '.xlsx'
+#     delete_yandex_disk_file(main_folder, file_path, yandex_token)
+    
+#     upload_file_to_yandex_disk(main_folder, name, report, content, yandex_token)
 
 
 # In[ ]:
