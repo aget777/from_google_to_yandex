@@ -56,3 +56,26 @@ def get_data_to_yandex_disk(main_folder, base_link, name, report, yandex_token):
     
     upload_file_to_yandex_disk(main_folder, name, report, content, yandex_token)
 
+
+# In[ ]:
+
+
+def get_dashboards_folder(dashboadr_folder):
+    # проверяем - существует папка для временного сохранения файлов или нет
+    # если ее нет, то создаем
+    # если папка существует, то проверяем в ней наличие файлов
+    # если файлы в ней есть, то очищаем папку от содержимого
+    # в самом конце выполняем загрузку файлов из гугл диска
+    
+    # получаем адрес текущей папки
+    directory = config.path
+    current_directory = os.path.join(directory, dashboadr_folder)
+    if dashboadr_folder not in list(os.listdir(directory)):
+        os.makedirs(current_directory) # создаем папку для сохранения файлов дашбордов
+    else:
+        current_files_list = list(os.listdir(os.path.join(directory, dashboadr_folder)))
+        if len(current_files_list)!=0:
+            for file in current_files_list:
+                os.remove(os.path.join(current_directory, file))
+    return current_directory
+
