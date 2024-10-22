@@ -6,20 +6,11 @@
 
 import pandas as pd
 from io import BytesIO
-import requests
 from urllib.parse import urlencode
-import urllib
-from requests.auth import HTTPBasicAuth
-from requests.exceptions import ChunkedEncodingError
+import requests
 import os
 import json
 import yadisk
-from datetime import datetime, date, timedelta
-import locale
-from time import sleep
-import shutil
-import gc
-import gc
 from pandas.api.types import is_string_dtype
 import numpy as np
 import warnings
@@ -100,43 +91,7 @@ def create_yandex_disk_folder(file_path):
 # In[ ]:
 
 
-# # функция для загрузки Excel файлов на Яндекс Диск
-# # на входе принимает путь к основной папке
-# # путь к папке сохранения
-# # название файла (без расширения)
-# # файл, который нужно сохранить
-# # токен Яндекс
-# def upload_file_to_yandex_disk(main_folder, file_path, file_name, content, yandex_token):
-#     if '/' not in file_path:
-#         file_path = '/' + file_path
-#     # добавляем расширение файла к его названию
-#     file_name = file_name + '.xlsx'
-#     # формируем итоговый путь сохраненияфайла
-#     file_path = file_path + '/' + file_name
-#     url_path = urlencode(dict(path=main_folder+file_path)) # кодируем полный путь сохранения файла вместе с его названием
-    
-#     # добавляем флаг permanently=True для полного удаления файлов
-#     final_url = upload_url + url_path + '&overwrite=True'
-#     # формируем заголовки для дальнейших запросов
-#     headers = {
-#         'Content-Type': 'application/json', 
-#         'Accept': 'application/json', 
-#         'Authorization': f'OAuth {yandex_token}'
-#     }
-   
-#     #вызываем метод get для получения ссылки для загрузки файла
-#     # это одноразовая ссылка, если загрузка не удалась, ссылку нужно получать заново
-#     res = requests.get(final_url, headers=headers) 
-#     # парсим ответ сервера
-#     data = json.loads(res.content)
-#     # забираем ссылку для загрузки файла
-#     download_link = data['href']
-#     # отправляем файл на яндекс диск
-#     status = requests.put(download_link, files={'file': content})
-#     if status.status_code == 201:
-#         print('Файл успешно загружен')
-#     else:
-#         print('Возможны ошибки - Проверьте Яндекс Диск')    
+
 
 
 # In[ ]:
